@@ -1,0 +1,71 @@
+<html>
+    <h1 id="FirstName"></h1>
+    <h2 id="LastName"></h2>
+</html>
+
+<script>
+
+//localStorage.setItem("Jan", "10");
+//localStorage.setItem("Henk", "100");
+//localStorage.setItem("Frits", "14");
+
+var scoreArray = [];
+
+scoreArray.push({"Jan":50});
+scoreArray.push({"Henk":100});
+scoreArray.push({"Frits":65});
+
+localStorage.setItem("Score", JSON.stringify(scoreArray));
+
+var storedItems = JSON.parse(localStorage.getItem("Score"));
+console.log(storedItems);
+document.getElementById("FirstName").innerText = storedItems;
+
+// storedItems.forEach(score =>{
+//     console.log(score.Frits);   
+//     document.getElementById("FirstName").innerText += score;
+// });
+
+
+// var firstName = prompt("Enter your first name");
+// var lastName = prompt("Enter your last name");
+
+//     setCookie("firstName", firstName);
+//     setCookie("lastName", lastName);
+  
+
+//     document.getElementById("FirstName").innerText = getCookie("firstName");
+//     document.getElementById("LastName").innerText = getCookie("lastName");   
+
+//     function setCookie(id, value)
+//     {
+//         var date = new Date();
+//         var expires = date.setTime(date.getTime() + (10*24*60*1000)); //cookie remains for 10 days; 
+//         document.cookie = id + "=" + value + ";" + expires + ";path=/";
+//     }
+
+//     function getCookie(id)
+//     {
+//         var name = id + "=";
+//         var decodedCookie = decodeURIComponent(document.cookie);
+//         var cookieArray = decodedCookie.split(";");
+
+//         for(var i = 0; i <cookieArray.length; i++)
+//         {
+//             var cookie = cookieArray[i];
+            
+//             while(cookie.charAt(0) == " ")
+//             {
+//                 cookie = cookie.substring(1);
+//             }
+//             if(cookie.indexOf(name) == 0)
+//             {
+//                 return cookie.substring(name.length, cookie.length);
+//             }
+//         }
+
+//         return "";
+//     }
+
+
+</script>
