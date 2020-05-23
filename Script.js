@@ -3,12 +3,14 @@ const canvasContext = canvas.getContext("2d");
 
 var debug = true;
 
+var imageMenu = new ImageSource("Images/Menu.png", x=0,y=0, width=720, height=1280);
+var imageBackground = new ImageSource("Images/Background.jpg", x=0,y=0, width=720, height=1280);
 var imageBasket = new ImageSource("Images/Basket.png", x=0,y=0, width=100, height=100);
 var imageChicken = new ImageSource("Images/Chicken.png", x=0,y=0, width=96, height=82);
 var imageWhiteEgg = new ImageSource("Images/Egg.png", x=0,y=0, width=27, height=35);
 var imageBrownEgg = new ImageSource("Images/Brown_egg.png", x=0,y=0, width=27, height=35);
 var imageBrokenEgg = new ImageSource("Images/Broken_egg.png", x=0,y=0,width=35, height=35);
-var imagePlank = new ImageSource("Images/plank.png", x=0,y=0,width=650, height=24);
+var imagePlank = new ImageSource("Images/Plank.png", x=0,y=0,width=650, height=24);
 var imageLives0 = new ImageSource("Images/Lives0.png", x=0,y=0,width=187, height=40);
 var imageLives1 = new ImageSource("Images/Lives1.png", x=0,y=0,width=187, height=40);
 var imageLives2 = new ImageSource("Images/Lives2.png", x=0,y=0,width=187, height=40);
@@ -36,87 +38,128 @@ var basket = new Basket(canvas, canvasContext, imageBasket.image, cursorPosition
 var timer = 0;
 var spawnTime = 100;
 var score = 0;
+var HighScore = getHighScore();
 var caughtEggs = 0;
 var lives = 5;
+var play = false;
+
 
 window.onload = init;
-window.addEventListener("resize", getCanvasScale(canvas), false)
+window.addEventListener("resize", getCanvasScale(canvas), false);
+canvas.addEventListener("click", function(){play = true});
+canvas.addEventListener("mousemove", setCursorPosition, false)
+    
 
 loop();
 
 function loop() 
 {       
     canvasContext.clearRect(0,0, canvas.width, canvas.height);
-    updateLives();
-    updateScore();
-    drawPlanks(plankPositions);
+    drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND    
+    
+    if(play)
+    {
+        showCursor(false);
+        updateLives();
+        updateScore();
+        drawPlanks(plankPositions);
 
-    if(lives > 0)
-    {        
-        basket.Update();
+        if(lives > 0)
+        {        
+            basket.Update();
 
-        chickenArray.forEach(chicken =>{
-            chicken.update();
-        })
+            chickenArray.forEach(chicken =>{
+                chicken.update();
+            })
 
-        eggArray.forEach(egg =>{
-            if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) 
-            {                
-                lives--
+            eggArray.forEach(egg =>{
+                if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) 
+                {                
+                    lives--
 
-                //removes current element from the array
-                eggArray.splice(eggArray.indexOf(egg), 1);
+                    //removes current element from the array
+                    eggArray.splice(eggArray.indexOf(egg), 1);
 
-            }
-            else 
-            {
-                egg.update();
-
-                if (basket.CheckCollision(egg)) 
+                }
+                else 
                 {
-                    score += egg.speed;
-                    caughtEggs++;
-                    spawnTime--;
-                    removeEgg(egg);
+                    egg.update();
+
+                    if (basket.CheckCollision(egg)) 
+                    {
+                        score += egg.speed;
+                        caughtEggs++;
+                        spawnTime--;
+                        removeEgg(egg);
+                    }
+
                 }
 
+            });
+
+            if (timer > spawnTime) 
+            {
+                addEgg();            
+                timer = 0;
             }
 
-        });
-
-        if (timer > spawnTime) 
+            if (debug) {
+                console.log("Score: " + score);
+                console.log("CaughtEggs: " + caughtEggs);
+                console.log(eggArray);
+                console.log("MousePosition X:" + cursorPosition.x + " Y:" + cursorPosition.y);
+                console.log("BasketPosition X:" + ((cursorPosition.x - imageBasket.image.width * getCanvasScale(canvas).x / 2) / getCanvasScale(canvas).x) + " Y:" + ((cursorPosition.y - imageBasket.image.height * getCanvasScale(canvas).y / 2) / getCanvasScale(canvas).y));
+                console.log("Timer: " + timer);
+                console.log("Lives: " + lives);
+            }
+            
+            timer++;
+            requestAnimationFrame(loop);
+        }
+        else
         {
-            addEgg();            
-            timer = 0;
+            gameMenu(gameOver = true);            
         }
+    }
+    else
+    {
+        gameMenu();
+    }
+}
 
-        if (debug) {
-            console.log("Score: " + score);
-            console.log("CaughtEggs: " + caughtEggs);
-            console.log(eggArray);
-            console.log("MousePosition X:" + cursorPosition.x + " Y:" + cursorPosition.y);
-            console.log("BasketPosition X:" + ((cursorPosition.x - imageBasket.image.width * getCanvasScale(canvas).x / 2) / getCanvasScale(canvas).x) + " Y:" + ((cursorPosition.y - imageBasket.image.height * getCanvasScale(canvas).y / 2) / getCanvasScale(canvas).y));
-            console.log("Timer: " + timer);
-            console.log("Lives: " + lives);
-        }
-        
-        timer++;
-        requestAnimationFrame(loop);
+function gameMenu(gameOver = false)
+{
+    //play = false;
+    canvasContext.clearRect(0,0, canvas.width, canvas.height);
+    drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND 
+
+    showCursor(true);
+    drawImage(canvasContext, imageMenu.image, 0,0);        
+
+    HighScore = getHighScore();        
+    drawText(canvasContext, HighScore, canvas.width / 2, 800, "85px Mini Pixel-7", "white", "center");
+
+    if(gameOver)
+    {
+        drawText(canvasContext, "GAME OVER", canvas.width / 2, canvas.height / 2, "85px Mini Pixel-7", "white", "center");
+        updateScore();
+        setHighScore();
+
+        lives = 0;
+        score = 0;
     }
-    else{
-        DrawText(canvasContext, "GAME OVER", canvas.width /2, canvas.height / 2, "64px Mini Pixel-7");
-        checkHighScore();
-    }
+    
+    requestAnimationFrame(loop);
 }
 
 function updateLives()
 {  
-    drawImage(canvasContext, imageLivesArray[lives].image, canvas.width - imageLivesArray[lives].image.width, 50);   
+    drawImage(canvasContext, imageLivesArray[lives].image, canvas.width - imageLivesArray[lives].image.width - 25, 25);   
 }
 
 function updateScore()
 {
-    DrawText(canvasContext,"score: " + score, 50,50);
+    drawText(canvasContext,"score: " + score, 50,50);
     //canvasContext.fillText("score: " + score, 50,50);
 }
 
@@ -136,16 +179,18 @@ function removeEgg(egg)
     eggArray.splice(eggArray.indexOf(egg), 1);
 }
 
-function changeCursor(canvas)
+function showCursor(bool)
 {    
-    canvas.style.cursor = "none";
-    canvas.addEventListener("mousemove", setCursorPosition, false)
-
-    function setCursorPosition(event)
+    if(bool)
     {
-        cursorPosition.x = getMousePosition(canvas, event).x;
-        cursorPosition.y = getMousePosition(canvas, event).y;
+        canvas.style.cursor = "initial" 
+        
     }
+    else
+    {
+        canvas.style.cursor = "none"; 
+    }
+       
 }
 
 function drawPlanks(plankPositions)
@@ -169,7 +214,7 @@ function drawImageWithRotation(canvasContext, image, posX, posY, centerX, center
     canvasContext.setTransform(1,0,0,1,0,0);
 }
 
-function DrawText(canvascontext, text, positionX, positionY, font = "40px Mini Pixel-7", fillstyle = "white", textalign = "left")
+function drawText(canvascontext, text, positionX, positionY, font = "40px Mini Pixel-7", fillstyle = "white", textalign = "left")
 {
     canvascontext.font = font;
     canvascontext.fillStyle = fillstyle;
@@ -210,9 +255,9 @@ function calculateMiddleOfImage(image, canvas)
 
     return{x,y};
 }
+
 function init()
-{
-    changeCursor(canvas);
+{    
     addEgg();
 
     for(var i = 0; i < chickenPositions.length; i++)
@@ -221,11 +266,29 @@ function init()
     }
 }
 
-function checkHighScore()
+function setHighScore()
 {
     if(score > localStorage.getItem("Highscore"))
     {
         localStorage.setItem("Highscore", score);
         console.log("New highscore: " + score);
     }
+}
+
+function getHighScore()
+{
+    if(localStorage.getItem("Highscore") != null)
+    {
+        return localStorage.getItem("Highscore");
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+function setCursorPosition(event)
+{
+    cursorPosition.x = getMousePosition(canvas, event).x;
+    cursorPosition.y = getMousePosition(canvas, event).y;
 }
