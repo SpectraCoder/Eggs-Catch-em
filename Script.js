@@ -35,122 +35,136 @@ var chickenPositions =  [
 var eggArray = [];
 var basket = new Basket(canvas, canvasContext, imageBasket.image, cursorPosition);
 
-var timer = 0;
-var spawnTime = 100;
-var score = 0;
-var HighScore = getHighScore();
-var caughtEggs = 0;
-var lives = 5;
-var play = false;
-
+var timer;
+var spawnTime;
+var score;
+var highScore;
+var caughtEggs;
+var lives;
+var menu = true;
 
 window.onload = init;
 window.addEventListener("resize", getCanvasScale(canvas), false);
-canvas.addEventListener("click", function(){play = true});
-canvas.addEventListener("mousemove", setCursorPosition, false)
-    
+canvas.addEventListener("click", function(){clickHandler()});
+canvas.addEventListener("mousemove", setCursorPosition, false);
 
-loop();
+function init()
+{    
+    addEgg();
 
-function loop() 
-{       
-    canvasContext.clearRect(0,0, canvas.width, canvas.height);
-    drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND    
-    
-    if(play)
+    for(var i = 0; i < chickenPositions.length; i++)
     {
-        showCursor(false);
-        updateLives();
-        updateScore();
-        drawPlanks(plankPositions);
-
-        if(lives > 0)
-        {        
-            basket.Update();
-
-            chickenArray.forEach(chicken =>{
-                chicken.update();
-            })
-
-            eggArray.forEach(egg =>{
-                if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) 
-                {                
-                    lives--
-
-                    //removes current element from the array
-                    eggArray.splice(eggArray.indexOf(egg), 1);
-
-                }
-                else 
-                {
-                    egg.update();
-
-                    if (basket.CheckCollision(egg)) 
-                    {
-                        score += egg.speed;
-                        caughtEggs++;
-                        spawnTime--;
-                        removeEgg(egg);
-                    }
-
-                }
-
-            });
-
-            if (timer > spawnTime) 
-            {
-                addEgg();            
-                timer = 0;
-            }
-
-            if (debug) {
-                console.log("Score: " + score);
-                console.log("CaughtEggs: " + caughtEggs);
-                console.log(eggArray);
-                console.log("MousePosition X:" + cursorPosition.x + " Y:" + cursorPosition.y);
-                console.log("BasketPosition X:" + ((cursorPosition.x - imageBasket.image.width * getCanvasScale(canvas).x / 2) / getCanvasScale(canvas).x) + " Y:" + ((cursorPosition.y - imageBasket.image.height * getCanvasScale(canvas).y / 2) / getCanvasScale(canvas).y));
-                console.log("Timer: " + timer);
-                console.log("Lives: " + lives);
-            }
-            
-            timer++;
-            requestAnimationFrame(loop);
-        }
-        else
-        {
-            gameMenu(gameOver = true);            
-        }
+        addChicken(chickenPositions[i]);
     }
-    else
-    {
-        gameMenu();
-    }
-}
 
-function gameMenu(gameOver = false)
+    timer = 0;
+    spawnTime = 100;
+    score = 0;
+    highScore = getHighScore();
+    caughtEggs = 0;
+    lives = 5;     
+} 
+
+gameMenu();
+
+function gameMenu()
 {
-    //play = false;
+    menu = true;
     canvasContext.clearRect(0,0, canvas.width, canvas.height);
     drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND 
 
     showCursor(true);
     drawImage(canvasContext, imageMenu.image, 0,0);        
 
-    HighScore = getHighScore();        
-    drawText(canvasContext, HighScore, canvas.width / 2, 800, "85px Mini Pixel-7", "white", "center");
+    highScore = getHighScore();        
+    drawText(canvasContext, highScore, canvas.width / 2, 800, "85px Mini Pixel-7", "white", "center");
 
-    if(gameOver)
-    {
-        drawText(canvasContext, "GAME OVER", canvas.width / 2, canvas.height / 2, "85px Mini Pixel-7", "white", "center");
-        updateScore();
-        setHighScore();
-
-        lives = 0;
-        score = 0;
-    }
-    
-    requestAnimationFrame(loop);
+    requestAnimationFrame(gameMenu);    
 }
+
+function gameOver()
+{
+    menu = true;    
+    canvasContext.clearRect(0,0, canvas.width, canvas.height);
+    
+    showCursor(true);
+    drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND    
+    drawImage(canvasContext, imageMenu.image, 0,0);
+    drawText(canvasContext, "GAME OVER", canvas.width / 2, canvas.height / 2, "85px Mini Pixel-7", "white", "center");
+    updateScore();
+    setHighScore();
+    highScore = getHighScore();        
+    drawText(canvasContext, highScore, canvas.width / 2, 800, "85px Mini Pixel-7", "white", "center");  
+    
+    requestAnimationFrame(gameOver);
+}
+
+function playGame()
+{
+    canvasContext.clearRect(0,0, canvas.width, canvas.height);
+    drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND   
+    
+    menu = false;
+    showCursor(false);
+    updateLives();
+    updateScore();
+    drawPlanks(plankPositions);
+
+    if(lives > 0)
+    {        
+        basket.Update();
+
+        chickenArray.forEach(chicken =>{
+            chicken.update();
+        })
+
+        eggArray.forEach(egg =>{
+            if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) //if egg hits the ground
+            {                
+                lives--                
+                removeEgg(egg);
+            }
+            else 
+            { 
+                if (basket.CheckCollision(egg)) //if egg hits basket
+                {
+                    score += egg.speed;
+                    caughtEggs++;
+                    spawnTime--;
+                    removeEgg(egg);
+                }
+                else
+                {
+                    egg.update();
+                }
+            }
+        });
+
+        if (timer > spawnTime) 
+        {
+            addEgg();            
+            timer = 0;
+        }
+
+        if (debug) {
+            console.log("Score: " + score);
+            console.log("CaughtEggs: " + caughtEggs);
+            console.log(eggArray);
+            console.log("MousePosition X:" + cursorPosition.x + " Y:" + cursorPosition.y);
+            console.log("BasketPosition X:" + ((cursorPosition.x - imageBasket.image.width * getCanvasScale(canvas).x / 2) / getCanvasScale(canvas).x) + " Y:" + ((cursorPosition.y - imageBasket.image.height * getCanvasScale(canvas).y / 2) / getCanvasScale(canvas).y));
+            console.log("Timer: " + timer);
+            console.log("Lives: " + lives);
+        }
+        
+        timer++;
+        requestAnimationFrame(playGame);
+    }
+    else
+    {
+        requestAnimationFrame(gameOver);            
+    }
+}    
+
 
 function updateLives()
 {  
@@ -256,16 +270,6 @@ function calculateMiddleOfImage(image, canvas)
     return{x,y};
 }
 
-function init()
-{    
-    addEgg();
-
-    for(var i = 0; i < chickenPositions.length; i++)
-    {
-        addChicken(chickenPositions[i]);
-    }
-}
-
 function setHighScore()
 {
     if(score > localStorage.getItem("Highscore"))
@@ -291,4 +295,13 @@ function setCursorPosition(event)
 {
     cursorPosition.x = getMousePosition(canvas, event).x;
     cursorPosition.y = getMousePosition(canvas, event).y;
+}
+
+function clickHandler()
+{
+    if(menu)
+    {
+        init();
+        requestAnimationFrame(function(){playGame()});
+    }   
 }
