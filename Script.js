@@ -25,14 +25,10 @@ var cursorPosition = {x: 350 * getCanvasScale(canvas).x, y: 1000 * getCanvasScal
 
 var plankPositions = [{x:35,y:200}, {x:35, y:400}, {x:35, y:600}];
 
-var chickenArray = [];
-var chickenPositions =  [
-                            {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[0].y - imageChicken.image.height}, 
-                            {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[1].y - imageChicken.image.height}, 
-                            {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
-                        ]
+var chickenArray;
+var chickenPositions;  
 
-var eggArray = [];
+var eggArray;
 var basket = new Basket(canvas, canvasContext, imageBasket.image, cursorPosition);
 
 var timer;
@@ -49,20 +45,30 @@ canvas.addEventListener("click", function(){clickHandler()});
 canvas.addEventListener("mousemove", setCursorPosition, false);
 
 function init()
-{    
-    addEgg();
-
-    for(var i = 0; i < chickenPositions.length; i++)
-    {
-        addChicken(chickenPositions[i]);
-    }
-
+{   
     timer = 0;
     spawnTime = 100;
     score = 0;
     highScore = getHighScore();
     caughtEggs = 0;
-    lives = 5;     
+    lives = 5;
+    eggArray = [];
+
+    chickenArray = [];    
+    chickenPositions = [
+        {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[0].y - imageChicken.image.height}, 
+        {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[1].y - imageChicken.image.height}, 
+        {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
+    ]  
+
+    addEgg();
+
+    for(var i = 0; i < chickenPositions.length; i++)
+    {
+        addChicken(chickenPositions[i]);
+    }    
+
+     
 } 
 
 gameMenu();
