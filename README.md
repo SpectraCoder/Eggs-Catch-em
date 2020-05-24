@@ -1,2 +1,2 @@
 Playable version:
-https://spectracoder.github.io/Eggs-Catch-em/
+https://spectracoder.github.io/Eggs-Catch-em/index.html
