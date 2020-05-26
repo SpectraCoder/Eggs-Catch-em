@@ -59,16 +59,12 @@ function init()
         {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[0].y - imageChicken.image.height}, 
         {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[1].y - imageChicken.image.height}, 
         {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
-    ]  
-
-    addEgg();
+    ] 
 
     for(var i = 0; i < chickenPositions.length; i++)
     {
         addChicken(chickenPositions[i]);
-    }    
-
-     
+    }     
 } 
 
 gameMenu();
