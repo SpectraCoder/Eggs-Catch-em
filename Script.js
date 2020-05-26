@@ -61,6 +61,10 @@ function init()
         {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
     ] 
 
+    eggArray.forEach(egg =>{
+        removeEgg(egg);
+    })
+
     for(var i = 0; i < chickenPositions.length; i++)
     {
         addChicken(chickenPositions[i]);
