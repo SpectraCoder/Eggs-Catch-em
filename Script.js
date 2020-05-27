@@ -38,6 +38,7 @@ var highScore;
 var caughtEggs;
 var lives;
 var menu = true;
+const maxSpawnTime = 50;
 
 window.onload = init;
 window.addEventListener("resize", getCanvasScale(canvas), false);
@@ -136,7 +137,12 @@ function playGame()
                 {
                     score += egg.speed;
                     caughtEggs++;
-                    spawnTime--;
+                    
+                    if (spawnTime > maxSpawnTime)
+                    {
+                        spawnTime--;
+                    }
+                    
                     removeEgg(egg);
                 }
                 else
