@@ -270,7 +270,7 @@ function getCanvasScale(canvas)
 //Generates a random integer
 function getRandomInt(min, max) 
 {
-    return Math.floor(Math.random() * Math.floor(max) + min);
+    return Math.floor(Math.random() * Math.floor(max - min) + min);
 }
 
 //calculates the center of the given image and returns an object of x and y
