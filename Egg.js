@@ -5,8 +5,8 @@ class Egg{constructor(canvasContext, image, chickenPositions)
         this.image = image;
         this.xPosition = randomChickenPosition.x + imageChicken.image.width / 2;
         this.yPosition = randomChickenPosition.y + imageChicken.image.height;       
-        this.fallPositionRight = getRandomInt(this.xPosition, canvasContext.canvas.width); //TODO: This should become a calculation beween the length of the plank, the position of the chicken, and the direction of the egg to move.
-        this.fallPositionLeft = getRandomInt(0, this.xPosition);
+        this.fallPositionRight = getRandomInt(this.xPosition, imagePlank.image.width);
+        this.fallPositionLeft = getRandomInt(10, this.xPosition);
         this.rollSpeed = 1;
         this.directionRight = Math.random() >= 0.5; //random true or false indicates left or right
         this.speed = getRandomInt(5,10);
