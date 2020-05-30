@@ -48,6 +48,11 @@ function startup()
     canvas.addEventListener("click", function(){clickHandler()});
     canvas.addEventListener("mousemove", setCursorPosition, false);
 
+    canvas.addEventListener("touchstart", touchStart, false);
+    //canvas.addEventListener("touchend", touchEnd, false);
+    //canvas.addEventListener("touchcancel", touchCancel, false);
+    canvas.addEventListener("touchmove", touchMove, false);
+
     init();
 }
 
@@ -322,4 +327,32 @@ function clickHandler()
         init();
         requestAnimationFrame(function(){playGame()});
     }   
+}
+
+function touchStart(event)
+{   
+    event.preventDefault();
+    clickHandler();
+}
+
+// function touchEnd()
+// {
+
+// }
+
+// function touchCancel()
+// {
+
+// }
+
+function touchMove(event)
+{
+    event.preventDefault();
+    var touches = event.changedTouches;
+
+    for(var i = 0; i < touches.length; i++)
+    {
+        cursorPosition.x = touches[i].clientX;
+        cursorPosition.y = touches[i].clientY;
+    }
 }
