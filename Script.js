@@ -38,17 +38,23 @@ var highScore;
 var caughtEggs;
 var lives;
 var menu = true;
-const maxSpawnTime = 50;
+const minSpawnTime = 50;
 
-window.onload = init;
-window.addEventListener("resize", getCanvasScale(canvas), false);
-canvas.addEventListener("click", function(){clickHandler()});
-canvas.addEventListener("mousemove", setCursorPosition, false);
+document.addEventListener("DOMContentLoaded", startup);
+
+function startup()
+{
+    window.addEventListener("resize", getCanvasScale(canvas), false);
+    canvas.addEventListener("click", function(){clickHandler()});
+    canvas.addEventListener("mousemove", setCursorPosition, false);
+
+    init();
+}
 
 function init()
 {   
     timer = 0;
-    spawnTime = 100;
+    spawnTime = 250;
     score = 0;
     highScore = getHighScore();
     caughtEggs = 0;
@@ -138,7 +144,7 @@ function playGame()
                     score += egg.speed;
                     caughtEggs++;
                     
-                    if (spawnTime > maxSpawnTime)
+                    if (spawnTime > minSpawnTime)
                     {
                         spawnTime--;
                     }
