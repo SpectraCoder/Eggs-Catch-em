@@ -349,10 +349,11 @@ function touchMove(event)
 {
     event.preventDefault();
     var touches = event.changedTouches;
+    var rect = canvas.getBoundingClientRect();
 
     for(var i = 0; i < touches.length; i++)
     {
-        cursorPosition.x = touches[i].clientX;
-        cursorPosition.y = touches[i].clientY;
+        cursorPosition.x = touches[i].clientX - rect.left;
+        cursorPosition.y = touches[i].clientY - rect.top;
     }
 }
