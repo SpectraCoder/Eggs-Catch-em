@@ -38,17 +38,28 @@ var highScore;
 var caughtEggs;
 var lives;
 var menu = true;
-const maxSpawnTime = 50;
+const minSpawnTime = 50;
 
-window.onload = init;
-window.addEventListener("resize", getCanvasScale(canvas), false);
-canvas.addEventListener("click", function(){clickHandler()});
-canvas.addEventListener("mousemove", setCursorPosition, false);
+document.addEventListener("DOMContentLoaded", startup);
+
+function startup()
+{
+    window.addEventListener("resize", getCanvasScale(canvas), false);
+    canvas.addEventListener("click", function(){clickHandler()});
+    canvas.addEventListener("mousemove", setCursorPosition, false);
+
+    canvas.addEventListener("touchstart", touchStart, false);
+    //canvas.addEventListener("touchend", touchEnd, false);
+    //canvas.addEventListener("touchcancel", touchCancel, false);
+    canvas.addEventListener("touchmove", touchMove, false);
+
+    init();
+}
 
 function init()
 {   
     timer = 0;
-    spawnTime = 100;
+    spawnTime = 250;
     score = 0;
     highScore = getHighScore();
     caughtEggs = 0;
@@ -138,7 +149,7 @@ function playGame()
                     score += egg.speed;
                     caughtEggs++;
                     
-                    if (spawnTime > maxSpawnTime)
+                    if (spawnTime > minSpawnTime)
                     {
                         spawnTime--;
                     }
@@ -316,4 +327,33 @@ function clickHandler()
         init();
         requestAnimationFrame(function(){playGame()});
     }   
+}
+
+function touchStart(event)
+{   
+    event.preventDefault();
+    clickHandler();
+}
+
+// function touchEnd()
+// {
+
+// }
+
+// function touchCancel()
+// {
+
+// }
+
+function touchMove(event)
+{
+    event.preventDefault();
+    var touches = event.changedTouches;
+    var rect = canvas.getBoundingClientRect();
+
+    for(var i = 0; i < touches.length; i++)
+    {
+        cursorPosition.x = touches[i].clientX - rect.left;
+        cursorPosition.y = touches[i].clientY - rect.top;
+    }
 }
