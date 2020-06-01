@@ -3,8 +3,8 @@ class Egg{constructor(canvasContext, image, chickenPositions)
         var randomChickenPosition = chickenPositions[getRandomInt(0, chickenPositions.length)]
         this.canvasContext = canvasContext;
         this.image = image;
-        this.xPosition = randomChickenPosition.x + imageChicken.image.width / 2;
-        this.yPosition = randomChickenPosition.y + imageChicken.image.height;       
+        this.xPosition = randomChickenPosition.x + imageChickenIdle.image.width / 2;
+        this.yPosition = randomChickenPosition.y + imageChickenIdle.image.height;       
         this.fallPositionRight = getRandomInt(this.xPosition, imagePlank.image.width);
         this.fallPositionLeft = getRandomInt(10, this.xPosition);
         this.rollSpeed = 1;

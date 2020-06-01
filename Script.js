@@ -6,7 +6,8 @@ var debug = true;
 var imageMenu = new ImageSource("Images/Menu.png", x=0,y=0, width=720, height=1280);
 var imageBackground = new ImageSource("Images/Background.jpg", x=0,y=0, width=720, height=1280);
 var imageBasket = new ImageSource("Images/Basket.png", x=0,y=0, width=100, height=100);
-var imageChicken = new ImageSource("Images/Chicken.png", x=0,y=0, width=96, height=82);
+var imageChickenIdle = new ImageSource("Images/ChickenIdle.png", x=0,y=0, width=96, height=82);
+var imageChickenAnimation = new ImageSource("Images/ChickenLayingAnimation.png", x=0,y=0, width=1632, height=82);
 var imageWhiteEgg = new ImageSource("Images/Egg.png", x=0,y=0, width=27, height=35);
 var imageBrownEgg = new ImageSource("Images/Brown_egg.png", x=0,y=0, width=27, height=35);
 var imageBrokenEgg = new ImageSource("Images/Broken_egg.png", x=0,y=0,width=35, height=35);
@@ -48,9 +49,7 @@ function startup()
     canvas.addEventListener("click", function(){clickHandler()});
     canvas.addEventListener("mousemove", setCursorPosition, false);
 
-    canvas.addEventListener("touchstart", touchStart, false);
-    //canvas.addEventListener("touchend", touchEnd, false);
-    //canvas.addEventListener("touchcancel", touchCancel, false);
+    canvas.addEventListener("touchstart", touchStart, false);    
     canvas.addEventListener("touchmove", touchMove, false);
 
     init();
@@ -68,9 +67,9 @@ function init()
 
     chickenArray = [];    
     chickenPositions = [
-        {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[0].y - imageChicken.image.height}, 
-        {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[1].y - imageChicken.image.height}, 
-        {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
+        {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[0].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[1].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[2].y - imageChickenIdle.image.height}
     ] 
 
     eggArray.forEach(egg =>{
@@ -133,7 +132,8 @@ function playGame()
         basket.Update();
 
         chickenArray.forEach(chicken =>{
-            chicken.update();
+            //chicken.update();
+            chicken.playAnimation(10);
         })
 
         eggArray.forEach(egg =>{
@@ -208,7 +208,7 @@ function addEgg()
 
 function addChicken(position)
 {
-    chickenArray.push(new Chicken(canvasContext, imageChicken.image, position.x, position.y));
+    chickenArray.push(new Chicken(canvasContext, imageChickenAnimation.image, position.x, position.y, 96, 82));
 }
 
 function removeEgg(egg)
@@ -241,6 +241,11 @@ function drawPlanks(plankPositions)
 function drawImage(canvasContext, image, posX, posY)
 {        
     canvasContext.drawImage(image, posX, posY, image.width, image.height);
+}
+
+function drawSpriteAnimation(context, image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight)
+{
+    context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
 }
 
 function drawImageWithRotation(canvasContext, image, posX, posY, centerX, centerY, angle)
@@ -334,16 +339,6 @@ function touchStart(event)
     event.preventDefault();
     clickHandler();
 }
-
-// function touchEnd()
-// {
-
-// }
-
-// function touchCancel()
-// {
-
-// }
 
 function touchMove(event)
 {
