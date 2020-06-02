@@ -132,8 +132,16 @@ function playGame()
         basket.Update();
 
         chickenArray.forEach(chicken =>{
-            //chicken.update();
-            chicken.playAnimation(10);
+
+            if(chicken.animationPlaying)
+            {
+                chicken.playAnimation();  
+            }
+            else
+            {
+                chicken.update();
+            }
+                      
         })
 
         eggArray.forEach(egg =>{
@@ -165,7 +173,7 @@ function playGame()
 
         if (timer > spawnTime) 
         {
-            addEgg();            
+            addEgg();  
             timer = 0;
         }
 
@@ -200,10 +208,18 @@ function updateScore()
     //canvasContext.fillText("score: " + score, 50,50);
 }
 
+// function addEgg()
+// {
+//     //Instantiates the eggs that are going to be dropped
+//     eggArray.push(new Egg(canvasContext, imageEggArray[getRandomInt(0,imageEggArray.length)].image, chickenPositions));
+// }
+
 function addEgg()
 {
     //Instantiates the eggs that are going to be dropped
-    eggArray.push(new Egg(canvasContext, imageEggArray[getRandomInt(0,imageEggArray.length)].image, chickenPositions));
+    eggArray.push(
+        chickenArray[getRandomInt(0, chickenArray.length)]
+        .layEgg(imageEggArray[getRandomInt(0,imageEggArray.length)].image));
 }
 
 function addChicken(position)
