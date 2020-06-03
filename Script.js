@@ -19,6 +19,14 @@ var imageLives3 = new ImageSource("Images/Lives3.png", x=0,y=0,width=187, height
 var imageLives4 = new ImageSource("Images/Lives4.png", x=0,y=0,width=187, height=40);
 var imageLives5 = new ImageSource("Images/Lives5.png", x=0,y=0,width=187, height=40);
 
+var soundChickenLaying1 = new Audio("Sounds/ChickenLaying1.mp3");
+var soundChickenLaying2 = new Audio("Sounds/ChickenLaying2.mp3");
+var soundChickenLaying3 = new Audio("Sounds/ChickenLaying3.mp3");
+var soundEggCatch = new Audio("Sounds/EggCatch.mp3");
+var soundEggBroken = new Audio("Sounds/EggBroken.mp3");
+
+var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
+
 var imageEggArray = [imageWhiteEgg, imageBrownEgg];
 var imageLivesArray = [imageLives0,imageLives1,imageLives2,imageLives3,imageLives4,imageLives5];
 
@@ -147,6 +155,7 @@ function playGame()
         eggArray.forEach(egg =>{
             if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) //if egg hits the ground
             {                
+                soundEggBroken.play();
                 lives--                
                 removeEgg(egg);
             }
@@ -154,6 +163,7 @@ function playGame()
             { 
                 if (basket.CheckCollision(egg)) //if egg hits basket
                 {
+                    soundEggCatch.play();
                     score += egg.speed;
                     caughtEggs++;
                     
