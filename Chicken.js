@@ -11,9 +11,7 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
         this.animationPlaying = false;
 
     }
-
-    //TODO 
-    //returns egg object
+    
     layEgg(eggImage)
     {
         this.animationPlaying = true;
@@ -23,29 +21,34 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
     }
 
     update()
-    {
-        //drawImage(this.canvasContext, this.image.image, this.position.x, this.position.y);
-        
-        drawSpriteAnimation(//context
-                            this.canvasContext, 
-                             //image
-                            this.image, 
-                            //sourceX
-                            this.sourcePosition.x, 
-                            //sourceY
-                            this.sourcePosition.y,
-                            //sourceWidth
-                            this.spriteSize.width,
-                            //sourceHeight
-                            this.spriteSize.height,
-                            //destinationX
-                            this.position.x,
-                            //destinationY
-                            this.position.y,
-                            //destinationWidth
-                            this.spriteSize.width,
-                            //destinationHeight
-                            this.spriteSize.height)
+    {        
+        if (!this.animationPlaying)
+        {
+            drawSpriteAnimation(//context
+                this.canvasContext,
+                //image
+                this.image,
+                //sourceX
+                this.sourcePosition.x,
+                //sourceY
+                this.sourcePosition.y,
+                //sourceWidth
+                this.spriteSize.width,
+                //sourceHeight
+                this.spriteSize.height,
+                //destinationX
+                this.position.x,
+                //destinationY
+                this.position.y,
+                //destinationWidth
+                this.spriteSize.width,
+                //destinationHeight
+                this.spriteSize.height)
+        }
+        else
+        {
+            this.playAnimation();
+        }
     }
 
     playAnimation()
@@ -92,9 +95,7 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
     
             this.tickCounter++;
 
-        }
-
-        
+        } 
         
     }
 

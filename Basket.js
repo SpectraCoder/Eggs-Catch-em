@@ -7,7 +7,7 @@ class Basket{constructor(canvas, canvasContext, image)
         this.xPosition = 0; 
     }
 
-    Update()
+    update()
     {  
         this.xPosition = calculateMiddleOfImage(this.image, this.canvas).x;
 
@@ -15,12 +15,12 @@ class Basket{constructor(canvas, canvasContext, image)
 
     }
 
-    CheckCollision(objEgg)
+    checkCollision(objEgg)
     {   
         if (objEgg.xPosition < this.xPosition + this.image.width && 
             objEgg.xPosition + objEgg.image.width > this.xPosition && 
-            objEgg.yPosition < this.yPosition + (this.image.height * getCanvasScale(this.canvas).y) 
-            && objEgg.yPosition + objEgg.image.height > this.yPosition + (this.image.height / 2* getCanvasScale(this.canvas).y)) 
+            objEgg.yPosition < this.yPosition + (this.image.height * getCanvasScale(this.canvas).y) && 
+            objEgg.yPosition + objEgg.image.height > this.yPosition + (this.image.height / 2* getCanvasScale(this.canvas).y)) 
         {
             objEgg.caught = true;
             return true;

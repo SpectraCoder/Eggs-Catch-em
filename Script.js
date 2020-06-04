@@ -21,11 +21,11 @@ var imageLives3 = new ImageSource("Images/Lives3.png", x=0,y=0,width=187, height
 var imageLives4 = new ImageSource("Images/Lives4.png", x=0,y=0,width=187, height=40);
 var imageLives5 = new ImageSource("Images/Lives5.png", x=0,y=0,width=187, height=40);
 
-var soundChickenLaying1 = new Audio("Sounds/ChickenLaying1.mp3");
-var soundChickenLaying2 = new Audio("Sounds/ChickenLaying2.mp3");
-var soundChickenLaying3 = new Audio("Sounds/ChickenLaying3.mp3");
-var soundEggCatch = new Audio("Sounds/EggCatch.mp3");
-var soundEggBroken = new Audio("Sounds/EggBroken.mp3");
+var soundChickenLaying1 = "Sounds/ChickenLaying1.mp3";
+var soundChickenLaying2 = "Sounds/ChickenLaying2.mp3";
+var soundChickenLaying3 = "Sounds/ChickenLaying3.mp3";
+var soundEggCatch = "Sounds/EggCatch.mp3";
+var soundEggBroken = "Sounds/EggBroken.mp3";
 
 var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
 
@@ -140,33 +140,26 @@ function playGame()
 
     if(lives > 0)
     {        
-        basket.Update();
+        basket.update();
 
         chickenArray.forEach(chicken =>{
-
-            if(chicken.animationPlaying)
-            {
-                chicken.playAnimation();  
-            }
-            else
-            {
-                chicken.update();
-            }
+            
+            chicken.update();            
                       
         })
 
         eggArray.forEach(egg =>{
             if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) //if egg hits the ground
             {                
-                soundEggBroken.play();
+                playSound(soundEggBroken);
                 lives--                
                 removeEgg(egg);
             }
             else 
             { 
-                if (basket.CheckCollision(egg)) //if egg hits basket
+                if (basket.checkCollision(egg)) //if egg hits basket
                 {
-                    soundEggCatch.play();
+                    playSound(soundEggCatch);
                     score += egg.speed;
                     caughtEggs++;
                     
@@ -342,9 +335,13 @@ function getHighScore()
     }
 }
 
+function playSound(soundSource)
+{
+    new Audio(soundSource).play();
+}
 function playRandomSound(soundArray)
 {
-    soundArray[getRandomInt(0, soundArray.length)].play();
+    new Audio(soundArray[getRandomInt(0, soundArray.length)]).play();
 }
 
 function setCursorPosition(event)
