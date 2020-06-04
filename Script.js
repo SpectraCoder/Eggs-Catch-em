@@ -10,6 +10,8 @@ var imageChickenIdle = new ImageSource("Images/ChickenIdle.png", x=0,y=0, width=
 var imageChickenAnimation = new ImageSource("Images/ChickenLayingAnimation.png", x=0,y=0, width=1632, height=82);
 var imageWhiteEgg = new ImageSource("Images/Egg.png", x=0,y=0, width=27, height=35);
 var imageBrownEgg = new ImageSource("Images/Brown_egg.png", x=0,y=0, width=27, height=35);
+var imageBonusEgg = new ImageSource("Images/EggBonus.png", x=0,y=0, width=27, height=35);
+var imageLifeEgg = new ImageSource("Images/EggLife.png", x=0,y=0, width=27, height=35);
 var imageBrokenEgg = new ImageSource("Images/Broken_egg.png", x=0,y=0,width=35, height=35);
 var imagePlank = new ImageSource("Images/Plank.png", x=0,y=0,width=650, height=24);
 var imageLives0 = new ImageSource("Images/Lives0.png", x=0,y=0,width=187, height=40);
@@ -28,6 +30,7 @@ var soundEggBroken = new Audio("Sounds/EggBroken.mp3");
 var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
 
 var imageEggArray = [imageWhiteEgg, imageBrownEgg];
+var imageEggBonusArray = [imageBonusEgg, imageLifeEgg];
 var imageLivesArray = [imageLives0,imageLives1,imageLives2,imageLives3,imageLives4,imageLives5];
 
 var cursorPosition = {x: 350 * getCanvasScale(canvas).x, y: 1000 * getCanvasScale(canvas).y};
@@ -183,7 +186,7 @@ function playGame()
 
         if (timer > spawnTime) 
         {
-            addEgg();  
+            addEgg(imageEggArray);  
             timer = 0;
         }
 
@@ -218,18 +221,12 @@ function updateScore()
     //canvasContext.fillText("score: " + score, 50,50);
 }
 
-// function addEgg()
-// {
-//     //Instantiates the eggs that are going to be dropped
-//     eggArray.push(new Egg(canvasContext, imageEggArray[getRandomInt(0,imageEggArray.length)].image, chickenPositions));
-// }
-
-function addEgg()
+function addEgg(imageArray)
 {
-    //Instantiates the eggs that are going to be dropped
+    //Picks a random chicken and invokes its layEgg method which picks a random egg image from the array.
     eggArray.push(
         chickenArray[getRandomInt(0, chickenArray.length)]
-        .layEgg(imageEggArray[getRandomInt(0,imageEggArray.length)].image));
+        .layEgg(imageArray[getRandomInt(0,imageArray.length)].image));
 }
 
 function addChicken(position)
@@ -343,6 +340,11 @@ function getHighScore()
     {
         return 0;
     }
+}
+
+function playRandomSound(soundArray)
+{
+    soundArray[getRandomInt(0, soundArray.length)].play();
 }
 
 function setCursorPosition(event)

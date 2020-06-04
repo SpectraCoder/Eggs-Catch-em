@@ -18,7 +18,7 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
     {
         this.animationPlaying = true;
         this.playAnimation();
-        soundChickenArray[getRandomInt(0, soundChickenArray.length)].play();
+        playRandomSound(soundChickenArray);
         return new Egg(this.canvasContext, eggImage, this.position.x + this.spriteSize.width  / 2, this.position.y + this.spriteSize.height);
     }
 
