@@ -1,6 +1,10 @@
 const canvas = document.getElementById("canvas");
 const canvasContext = canvas.getContext("2d");
 
+var deltaTime;
+var timeStart;
+var lastTime;
+
 var debug = true;
 
 var imageMenu = new ImageSource("Images/Menu.png", x=0,y=0, width=720, height=1280);
@@ -127,8 +131,10 @@ function gameOver()
     requestAnimationFrame(gameOver);
 }
 
-function playGame()
-{
+function playGame(timestamp)
+{       
+    deltaTime = calculateDeltaTime(timestamp);
+
     canvasContext.clearRect(0,0, canvas.width, canvas.height);
     drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND   
     
@@ -172,7 +178,7 @@ function playGame()
                 }
                 else
                 {
-                    egg.update();
+                    egg.update(deltaTime);
                 }
             }
         });
@@ -184,6 +190,7 @@ function playGame()
         }
 
         if (debug) {
+            console.log("DeltaTime: " + deltaTime + "ms");
             console.log("Score: " + score);
             console.log("CaughtEggs: " + caughtEggs);
             console.log(eggArray);
@@ -314,6 +321,19 @@ function calculateMiddleOfImage(image, canvas)
     return{x,y};
 }
 
+//returns deltaTime in milliseconds
+function calculateDeltaTime(timestamp)
+{
+    if(timeStart === undefined)
+    {
+        timeStart = timestamp;
+    }
+    var deltatime = timestamp - lastTime;
+    lastTime = timestamp;    
+    
+    return deltatime;
+}
+
 function setHighScore()
 {
     if(score > localStorage.getItem("Highscore"))
@@ -355,7 +375,7 @@ function clickHandler()
     if(menu)
     {
         init();
-        requestAnimationFrame(function(){playGame()});
+        requestAnimationFrame(playGame);
     }   
 }
 
