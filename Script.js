@@ -166,12 +166,12 @@ function playGame(timestamp)
                 if (basket.checkCollision(egg)) //if egg hits basket
                 {
                     playSound(soundEggCatch);
-                    score += egg.speed;
+                    score += Math.round(egg.speed * deltaTime/1000);
                     caughtEggs++;
                     
                     if (spawnTime > minSpawnTime)
                     {
-                        spawnTime--;
+                        spawnTime --;
                     }
                     
                     removeEgg(egg);
@@ -191,6 +191,7 @@ function playGame(timestamp)
 
         if (debug) {
             console.log("DeltaTime: " + deltaTime + "ms");
+            console.log("spawnTime = " + spawnTime);
             console.log("Score: " + score);
             console.log("CaughtEggs: " + caughtEggs);
             console.log(eggArray);

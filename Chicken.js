@@ -52,8 +52,8 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
     }
 
     playAnimation()
-    {          
-        if(this.animationPlaying)
+    {  
+        if(this.animationPlaying)        
         {
             drawSpriteAnimation(
                 //context
@@ -92,11 +92,61 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
                 }            
     
             }        
-    
-            this.tickCounter++;
+            
+            this.tickCounter += this.frameDelay / 1000 * deltaTime;           
 
         } 
         
     }
+
+    // playAnimation()
+    // {          
+    //     if(this.animationPlaying)
+    //     {
+    //         this.frameDelay = this.frameDelay / 1000 * deltaTime; //STILL NEEDS WORK!
+
+    //         drawSpriteAnimation(
+    //             //context
+    //             this.canvasContext, 
+    //              //image
+    //             this.image, 
+    //             //sourceX
+    //             this.sourcePosition.x + (this.spriteSize.width * this.spriteIndex), 
+    //             //sourceY
+    //             this.sourcePosition.y,
+    //             //sourceWidth
+    //             this.spriteSize.width,
+    //             //sourceHeight
+    //             this.spriteSize.height,
+    //             //destinationX
+    //             this.position.x,
+    //             //destinationY
+    //             this.position.y,
+    //             //destinationWidth
+    //             this.spriteSize.width,
+    //             //destinationHeight            
+    //             this.spriteSize.height)
+            
+    //         if (this.tickCounter > this.frameDelay) 
+    //         {
+    //             //if the current shown sprite is still within the boundaries of the spritesheet width, advance to the next sprite.
+    //             if (this.sourcePosition.x + this.spriteSize.width + (this.spriteSize.width * this.spriteIndex) < this.image.width) 
+    //             {
+    //                 this.spriteIndex++;
+    //                 this.tickCounter = 0;              
+    //             }
+    //             else 
+    //             {
+    //                 this.spriteIndex = 1;
+    //                 this.animationPlaying = false;
+    //             }            
+    
+    //         }        
+    
+    //         this.tickCounter++;
+
+    //     } 
+        
+    // }
 
 } 

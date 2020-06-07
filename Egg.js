@@ -22,21 +22,21 @@ class Egg{constructor(canvasContext, image, posX, posY)
             //RIGHT
             if(this.xPosition < this.fallPositionRight && this.directionRight) //Roll on the plank
             {
-                this.xPosition += this.rollSpeed / 1000 * deltaTime;
+                this.xPosition += this.rollSpeed * deltaTime /1000;
                 this.angle += (this.rollSpeed * Math.PI / 45) / 1000 * deltaTime;
             }
            
             //LEFT
             else if(this.xPosition > this.fallPositionLeft && !this.directionRight)
             {
-                this.xPosition -= this.rollSpeed / 1000 * deltaTime;
-                this.angle -= (this.rollSpeed * Math.PI / 45) / 1000 * deltaTime;
+                this.xPosition -= this.rollSpeed * deltaTime /1000;
+                this.angle -= (this.rollSpeed * Math.PI / 45) * deltaTime /1000;
             }
             
             else //Fall down
             {
-                this.yPosition += this.speed / 1000 * deltaTime;            
-                this.angle +=  (this.speed * Math.PI / 180) / 1000 * deltaTime;
+                this.yPosition += this.speed * deltaTime /1000;            
+                this.angle +=  (this.speed * Math.PI / 180) * deltaTime /1000;
             }
             
         }
