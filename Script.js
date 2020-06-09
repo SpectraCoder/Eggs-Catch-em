@@ -34,12 +34,11 @@ var soundEggBroken = "Sounds/EggBroken.mp3";
 var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
 
 var imageEggArray = [imageWhiteEgg, imageBrownEgg];
-var imageEggBonusArray = [imageBonusEgg, imageLifeEgg];
 var imageLivesArray = [imageLives0,imageLives1,imageLives2,imageLives3,imageLives4,imageLives5];
 
 var cursorPosition = {x: 350 * getCanvasScale(canvas).x, y: 1000 * getCanvasScale(canvas).y};
 
-var plankPositions = [{x:35,y:200}, {x:35, y:400}, {x:35, y:600}];
+var plankPositionsArray = [{x:35,y:200}, {x:35, y:400}, {x:35, y:600}];
 
 var chickenArray;
 var chickenPositions;  
@@ -54,6 +53,7 @@ var highScore;
 var caughtEggs;
 var lives;
 var menu = true;
+var luckyNumber;
 const minSpawnTime = 50;
 
 document.addEventListener("DOMContentLoaded", startup);
@@ -78,13 +78,13 @@ function init()
     highScore = getHighScore();
     caughtEggs = 0;
     lives = 5;
-    eggArray = [];
+    eggArray = [];    
 
     chickenArray = [];    
     chickenPositions = [
-        {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[0].y - imageChickenIdle.image.height}, 
-        {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[1].y - imageChickenIdle.image.height}, 
-        {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositions[2].y - imageChickenIdle.image.height}
+        {x:getRandomInt(plankPositionsArray[0].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[0].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositionsArray[1].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[1].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositionsArray[2].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[2].y - imageChickenIdle.image.height}
     ] 
 
     eggArray.forEach(egg =>{
@@ -142,11 +142,12 @@ function playGame(timestamp)
     showCursor(false);
     updateLives();
     updateScore();
-    drawPlanks(plankPositions);
+    drawPlanks(plankPositionsArray);
 
     if(lives > 0)
     {        
         basket.update();
+        luckyNumber = getRandomInt(0,50);
 
         chickenArray.forEach(chicken =>{
             
@@ -168,6 +169,17 @@ function playGame(timestamp)
                     playSound(soundEggCatch);
                     score += Math.round(egg.speed * deltaTime/1000);
                     caughtEggs++;
+
+                    if(egg.lifeEgg)
+                    {
+                        lives++;
+                        //TODO: Play healing sound
+                    }
+
+                    if(egg.bonusEgg)
+                    {
+                        //Todo
+                    }
                     
                     if (spawnTime > minSpawnTime)
                     {
@@ -185,7 +197,15 @@ function playGame(timestamp)
 
         if (timer > spawnTime) 
         {
-            addEgg(imageEggArray);  
+            if((lives < 5) && (luckyNumber == 25)) //Get an extra life
+            {
+                addEgg(imageLifeEgg.image, lifeEgg = true);
+            }
+            else
+            {
+                addRandomEgg(imageEggArray);
+            }            
+            
             timer = 0;
         }
 
@@ -222,12 +242,20 @@ function updateScore()
     //canvasContext.fillText("score: " + score, 50,50);
 }
 
-function addEgg(imageArray)
+//Adds a random egg to the game, which is layed by a random chicken.
+function addRandomEgg(imageArray)
 {
-    //Picks a random chicken and invokes its layEgg method which picks a random egg image from the array.
-    eggArray.push(
-        chickenArray[getRandomInt(0, chickenArray.length)]
-        .layEgg(imageArray[getRandomInt(0,imageArray.length)].image));
+    
+    var egg = chickenArray[getRandomInt(0, chickenArray.length)].layEgg(imageArray[getRandomInt(0,imageArray.length)].image, lifeEgg = false, bonusEgg = false)
+    
+    eggArray.push(egg);
+}
+
+//Adds a specified egg to the game, which is layed by a random chicken.
+function addEgg(imageEgg, lifeEgg, bonusEgg)
+{
+    var egg = chickenArray[getRandomInt(0, chickenArray.length)].layEgg(imageEgg, lifeEgg, bonusEgg);
+    eggArray.push(egg);
 }
 
 function addChicken(position)
@@ -254,11 +282,11 @@ function showCursor(bool)
        
 }
 
-function drawPlanks(plankPositions)
+function drawPlanks(plankPositionsArray)
 {
-    for(var i = 0; i < plankPositions.length; i++)
+    for(var i = 0; i < plankPositionsArray.length; i++)
     {   
-        drawImage(canvasContext, imagePlank.image, plankPositions[i].x, plankPositions[i].y );
+        drawImage(canvasContext, imagePlank.image, plankPositionsArray[i].x, plankPositionsArray[i].y );
     }
 }
 

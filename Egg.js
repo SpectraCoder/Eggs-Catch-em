@@ -1,4 +1,4 @@
-class Egg{constructor(canvasContext, image, posX, posY)
+class Egg{constructor(canvasContext, image, posX, posY, lifeEgg = false, bonusEgg = false)
     {    
         this.canvasContext = canvasContext;
         this.image = image;        
@@ -11,6 +11,8 @@ class Egg{constructor(canvasContext, image, posX, posY)
         this.speed = getRandomInt(200,750);
         this.angle = 0;
         this.caught = false;
+        this.lifeEgg = lifeEgg;
+        this.bonusEgg = bonusEgg;        
     }
 
     update(deltaTime)

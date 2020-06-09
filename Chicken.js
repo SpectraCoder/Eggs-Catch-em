@@ -12,12 +12,12 @@ class Chicken{constructor(canvasContext, image, posX, posY, spriteWidth, spriteH
 
     }
     
-    layEgg(eggImage)
+    layEgg(eggImage, lifeEgg, bonusEgg)
     {
         this.animationPlaying = true;
         this.playAnimation();
         playRandomSound(soundChickenArray);
-        return new Egg(this.canvasContext, eggImage, this.position.x + this.spriteSize.width  / 2, this.position.y + this.spriteSize.height);
+        return new Egg(this.canvasContext, eggImage, this.position.x + this.spriteSize.width  / 2, this.position.y + this.spriteSize.height, lifeEgg, bonusEgg);
     }
 
     update()
