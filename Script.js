@@ -5,7 +5,7 @@ var deltaTime;
 var timeStart;
 var lastTime;
 
-var debug = true;
+var debug = false;
 
 var imageMenu = new ImageSource("Images/Menu.png", x=0,y=0, width=720, height=1280);
 var imageBackground = new ImageSource("Images/Background.jpg", x=0,y=0, width=720, height=1280);
