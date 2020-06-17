@@ -30,6 +30,9 @@ var soundChickenLaying2 = "Sounds/ChickenLaying2.mp3";
 var soundChickenLaying3 = "Sounds/ChickenLaying3.mp3";
 var soundEggCatch = "Sounds/EggCatch.mp3";
 var soundEggBroken = "Sounds/EggBroken.mp3";
+var soundHeal = "Sounds/Heal.mp3"
+var soundBonus = "Sounds/Bonus.mp3"
+var soundGameOver = "Sounds/GameOver.mp3"
 
 var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
 
@@ -54,7 +57,8 @@ var caughtEggs;
 var lives;
 var menu = true;
 var luckyNumber;
-const minSpawnTime = 50;
+const BONUSAMOUNT = 500;
+const MINSPAWNTIME = 50;
 
 document.addEventListener("DOMContentLoaded", startup);
 
@@ -147,7 +151,7 @@ function playGame(timestamp)
     if(lives > 0)
     {        
         basket.update();
-        luckyNumber = getRandomInt(0,50);
+        luckyNumber = getRandomInt(0,50);        
 
         chickenArray.forEach(chicken =>{
             
@@ -167,21 +171,28 @@ function playGame(timestamp)
                 if (basket.checkCollision(egg)) //if egg hits basket
                 {
                     playSound(soundEggCatch);
-                    score += Math.round(egg.speed * deltaTime/1000);
+                    
                     caughtEggs++;
 
                     if(egg.lifeEgg)
                     {
                         lives++;
-                        //TODO: Play healing sound
+                        playSound(soundHeal);
                     }
 
-                    if(egg.bonusEgg)
+                    else if(egg.bonusEgg)
                     {
-                        //Todo
+                        score += BONUSAMOUNT;
+                        playSound(soundBonus);
                     }
+                    else
+                    {
+                        score += Math.round(egg.speed * deltaTime/1000); //determine score based on the speed of the egg
+                    }
+
+
                     
-                    if (spawnTime > minSpawnTime)
+                    if (spawnTime > MINSPAWNTIME)
                     {
                         spawnTime --;
                     }
@@ -197,9 +208,13 @@ function playGame(timestamp)
 
         if (timer > spawnTime) 
         {
-            if((lives < 5) && (luckyNumber == 25)) //Get an extra life
+            if((lives < 5) && (luckyNumber == 25)) //Get an extra life!
             {
-                addEgg(imageLifeEgg.image, lifeEgg = true);
+                addEgg(imageLifeEgg.image, lifeEgg = true, bonusEgg = false);
+            }
+            if(luckyNumber == 10) //Get bonus!
+            {   
+                addEgg(imageBonusEgg.image, lifeEgg = false, bonusEgg = true);
             }
             else
             {
@@ -226,7 +241,8 @@ function playGame(timestamp)
     }
     else
     {
-        requestAnimationFrame(gameOver);            
+        requestAnimationFrame(gameOver);
+        playSound(soundGameOver);
     }
 }    
 
