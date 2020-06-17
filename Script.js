@@ -1,14 +1,21 @@
 const canvas = document.getElementById("canvas");
 const canvasContext = canvas.getContext("2d");
 
-var debug = true;
+var deltaTime;
+var timeStart;
+var lastTime;
+
+var debug = false;
 
 var imageMenu = new ImageSource("Images/Menu.png", x=0,y=0, width=720, height=1280);
 var imageBackground = new ImageSource("Images/Background.jpg", x=0,y=0, width=720, height=1280);
 var imageBasket = new ImageSource("Images/Basket.png", x=0,y=0, width=100, height=100);
-var imageChicken = new ImageSource("Images/Chicken.png", x=0,y=0, width=96, height=82);
+var imageChickenIdle = new ImageSource("Images/ChickenIdle.png", x=0,y=0, width=96, height=82);
+var imageChickenAnimation = new ImageSource("Images/ChickenLayingAnimation.png", x=0,y=0, width=1632, height=82);
 var imageWhiteEgg = new ImageSource("Images/Egg.png", x=0,y=0, width=27, height=35);
 var imageBrownEgg = new ImageSource("Images/Brown_egg.png", x=0,y=0, width=27, height=35);
+var imageBonusEgg = new ImageSource("Images/EggBonus.png", x=0,y=0, width=27, height=35);
+var imageLifeEgg = new ImageSource("Images/EggLife.png", x=0,y=0, width=27, height=35);
 var imageBrokenEgg = new ImageSource("Images/Broken_egg.png", x=0,y=0,width=35, height=35);
 var imagePlank = new ImageSource("Images/Plank.png", x=0,y=0,width=650, height=24);
 var imageLives0 = new ImageSource("Images/Lives0.png", x=0,y=0,width=187, height=40);
@@ -18,12 +25,23 @@ var imageLives3 = new ImageSource("Images/Lives3.png", x=0,y=0,width=187, height
 var imageLives4 = new ImageSource("Images/Lives4.png", x=0,y=0,width=187, height=40);
 var imageLives5 = new ImageSource("Images/Lives5.png", x=0,y=0,width=187, height=40);
 
+var soundChickenLaying1 = "Sounds/ChickenLaying1.mp3";
+var soundChickenLaying2 = "Sounds/ChickenLaying2.mp3";
+var soundChickenLaying3 = "Sounds/ChickenLaying3.mp3";
+var soundEggCatch = "Sounds/EggCatch.mp3";
+var soundEggBroken = "Sounds/EggBroken.mp3";
+var soundHeal = "Sounds/Heal.mp3"
+var soundBonus = "Sounds/Bonus.mp3"
+var soundGameOver = "Sounds/GameOver.mp3"
+
+var soundChickenArray = [soundChickenLaying1,soundChickenLaying2,soundChickenLaying3];
+
 var imageEggArray = [imageWhiteEgg, imageBrownEgg];
 var imageLivesArray = [imageLives0,imageLives1,imageLives2,imageLives3,imageLives4,imageLives5];
 
 var cursorPosition = {x: 350 * getCanvasScale(canvas).x, y: 1000 * getCanvasScale(canvas).y};
 
-var plankPositions = [{x:35,y:200}, {x:35, y:400}, {x:35, y:600}];
+var plankPositionsArray = [{x:35,y:200}, {x:35, y:400}, {x:35, y:600}];
 
 var chickenArray;
 var chickenPositions;  
@@ -38,7 +56,9 @@ var highScore;
 var caughtEggs;
 var lives;
 var menu = true;
-const minSpawnTime = 50;
+var luckyNumber;
+const BONUSAMOUNT = 500;
+const MINSPAWNTIME = 50;
 
 document.addEventListener("DOMContentLoaded", startup);
 
@@ -48,9 +68,7 @@ function startup()
     canvas.addEventListener("click", function(){clickHandler()});
     canvas.addEventListener("mousemove", setCursorPosition, false);
 
-    canvas.addEventListener("touchstart", touchStart, false);
-    //canvas.addEventListener("touchend", touchEnd, false);
-    //canvas.addEventListener("touchcancel", touchCancel, false);
+    canvas.addEventListener("touchstart", touchStart, false);    
     canvas.addEventListener("touchmove", touchMove, false);
 
     init();
@@ -64,13 +82,13 @@ function init()
     highScore = getHighScore();
     caughtEggs = 0;
     lives = 5;
-    eggArray = [];
+    eggArray = [];    
 
     chickenArray = [];    
     chickenPositions = [
-        {x:getRandomInt(plankPositions[0].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[0].y - imageChicken.image.height}, 
-        {x:getRandomInt(plankPositions[1].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[1].y - imageChicken.image.height}, 
-        {x:getRandomInt(plankPositions[2].x, imagePlank.image.width - imageChicken.image.width), y:plankPositions[2].y - imageChicken.image.height}
+        {x:getRandomInt(plankPositionsArray[0].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[0].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositionsArray[1].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[1].y - imageChickenIdle.image.height}, 
+        {x:getRandomInt(plankPositionsArray[2].x, imagePlank.image.width - imageChickenIdle.image.width), y:plankPositionsArray[2].y - imageChickenIdle.image.height}
     ] 
 
     eggArray.forEach(egg =>{
@@ -117,8 +135,10 @@ function gameOver()
     requestAnimationFrame(gameOver);
 }
 
-function playGame()
-{
+function playGame(timestamp)
+{       
+    deltaTime = calculateDeltaTime(timestamp);
+
     canvasContext.clearRect(0,0, canvas.width, canvas.height);
     drawImage(canvasContext, imageBackground.image,0,0); //BACKGROUND   
     
@@ -126,50 +146,87 @@ function playGame()
     showCursor(false);
     updateLives();
     updateScore();
-    drawPlanks(plankPositions);
+    drawPlanks(plankPositionsArray);
 
     if(lives > 0)
     {        
-        basket.Update();
+        basket.update();
+        luckyNumber = getRandomInt(0,50);        
 
         chickenArray.forEach(chicken =>{
-            chicken.update();
+            
+            chicken.update();            
+                      
         })
 
         eggArray.forEach(egg =>{
             if (egg.yPosition + egg.image.height * getCanvasScale(canvas).y >= canvas.height) //if egg hits the ground
             {                
+                playSound(soundEggBroken);
                 lives--                
                 removeEgg(egg);
             }
             else 
             { 
-                if (basket.CheckCollision(egg)) //if egg hits basket
+                if (basket.checkCollision(egg)) //if egg hits basket
                 {
-                    score += egg.speed;
-                    caughtEggs++;
+                    playSound(soundEggCatch);
                     
-                    if (spawnTime > minSpawnTime)
+                    caughtEggs++;
+
+                    if(egg.lifeEgg)
                     {
-                        spawnTime--;
+                        lives++;
+                        playSound(soundHeal);
+                    }
+
+                    else if(egg.bonusEgg)
+                    {
+                        score += BONUSAMOUNT;
+                        playSound(soundBonus);
+                    }
+                    else
+                    {
+                        score += Math.round(egg.speed * deltaTime/1000); //determine score based on the speed of the egg
+                    }
+
+
+                    
+                    if (spawnTime > MINSPAWNTIME)
+                    {
+                        spawnTime --;
                     }
                     
                     removeEgg(egg);
                 }
                 else
                 {
-                    egg.update();
+                    egg.update(deltaTime);
                 }
             }
         });
 
         if (timer > spawnTime) 
         {
-            addEgg();            
+            if((lives < 5) && (luckyNumber == 25)) //Get an extra life!
+            {
+                addEgg(imageLifeEgg.image, lifeEgg = true, bonusEgg = false);
+            }
+            if(luckyNumber == 10) //Get bonus!
+            {   
+                addEgg(imageBonusEgg.image, lifeEgg = false, bonusEgg = true);
+            }
+            else
+            {
+                addRandomEgg(imageEggArray);
+            }            
+            
             timer = 0;
         }
 
         if (debug) {
+            console.log("DeltaTime: " + deltaTime + "ms");
+            console.log("spawnTime = " + spawnTime);
             console.log("Score: " + score);
             console.log("CaughtEggs: " + caughtEggs);
             console.log(eggArray);
@@ -184,7 +241,8 @@ function playGame()
     }
     else
     {
-        requestAnimationFrame(gameOver);            
+        requestAnimationFrame(gameOver);
+        playSound(soundGameOver);
     }
 }    
 
@@ -200,15 +258,25 @@ function updateScore()
     //canvasContext.fillText("score: " + score, 50,50);
 }
 
-function addEgg()
+//Adds a random egg to the game, which is layed by a random chicken.
+function addRandomEgg(imageArray)
 {
-    //Instantiates the eggs that are going to be dropped
-    eggArray.push(new Egg(canvasContext, imageEggArray[getRandomInt(0,imageEggArray.length)].image, chickenPositions));
+    
+    var egg = chickenArray[getRandomInt(0, chickenArray.length)].layEgg(imageArray[getRandomInt(0,imageArray.length)].image, lifeEgg = false, bonusEgg = false)
+    
+    eggArray.push(egg);
+}
+
+//Adds a specified egg to the game, which is layed by a random chicken.
+function addEgg(imageEgg, lifeEgg, bonusEgg)
+{
+    var egg = chickenArray[getRandomInt(0, chickenArray.length)].layEgg(imageEgg, lifeEgg, bonusEgg);
+    eggArray.push(egg);
 }
 
 function addChicken(position)
 {
-    chickenArray.push(new Chicken(canvasContext, imageChicken.image, position.x, position.y));
+    chickenArray.push(new Chicken(canvasContext, imageChickenAnimation.image, position.x, position.y, 96, 82));
 }
 
 function removeEgg(egg)
@@ -230,17 +298,22 @@ function showCursor(bool)
        
 }
 
-function drawPlanks(plankPositions)
+function drawPlanks(plankPositionsArray)
 {
-    for(var i = 0; i < plankPositions.length; i++)
+    for(var i = 0; i < plankPositionsArray.length; i++)
     {   
-        drawImage(canvasContext, imagePlank.image, plankPositions[i].x, plankPositions[i].y );
+        drawImage(canvasContext, imagePlank.image, plankPositionsArray[i].x, plankPositionsArray[i].y );
     }
 }
 
 function drawImage(canvasContext, image, posX, posY)
 {        
     canvasContext.drawImage(image, posX, posY, image.width, image.height);
+}
+
+function drawSpriteAnimation(context, image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight)
+{
+    context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX, destinationY, destinationWidth, destinationHeight);
 }
 
 function drawImageWithRotation(canvasContext, image, posX, posY, centerX, centerY, angle)
@@ -293,6 +366,19 @@ function calculateMiddleOfImage(image, canvas)
     return{x,y};
 }
 
+//returns deltaTime in milliseconds
+function calculateDeltaTime(timestamp)
+{
+    if(timeStart === undefined)
+    {
+        timeStart = timestamp;
+    }
+    var deltatime = timestamp - lastTime;
+    lastTime = timestamp;    
+    
+    return deltatime;
+}
+
 function setHighScore()
 {
     if(score > localStorage.getItem("Highscore"))
@@ -314,6 +400,15 @@ function getHighScore()
     }
 }
 
+function playSound(soundSource)
+{
+    new Audio(soundSource).play();
+}
+function playRandomSound(soundArray)
+{
+    new Audio(soundArray[getRandomInt(0, soundArray.length)]).play();
+}
+
 function setCursorPosition(event)
 {
     cursorPosition.x = getMousePosition(canvas, event).x;
@@ -325,7 +420,7 @@ function clickHandler()
     if(menu)
     {
         init();
-        requestAnimationFrame(function(){playGame()});
+        requestAnimationFrame(playGame);
     }   
 }
 
@@ -334,16 +429,6 @@ function touchStart(event)
     event.preventDefault();
     clickHandler();
 }
-
-// function touchEnd()
-// {
-
-// }
-
-// function touchCancel()
-// {
-
-// }
 
 function touchMove(event)
 {
